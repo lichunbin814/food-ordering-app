@@ -1,12 +1,21 @@
-import { Typography, Card, CardContent, Box } from '@mui/material';
+import { Typography, Card, CardContent, Box, Button } from '@mui/material';
 import Grid from '@mui/material/Grid2';
-import { type MenuCategory } from '../../types/menu';
+import { type MenuCategory, type MenuItem } from '../../types/menu';
+import { useDispatch } from 'react-redux';
+import { addToCart } from '../../store/slices/cartSlice';
 
 interface MenuProps {
   categories: MenuCategory[];
 }
 
 export const Menu = ({ categories }: MenuProps) => {
+  const dispatch = useDispatch();
+
+  const handleAddToCart = (item: MenuItem) => {
+    console.log(`Adding ${item.name} to cart`);
+    dispatch(addToCart(item));
+  };
+
   return (
     <div style={{ background: 'var(--color-white)' }}>
       {categories.map((category) => (

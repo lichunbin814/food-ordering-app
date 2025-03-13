@@ -1,10 +1,12 @@
 import { AppBar, Toolbar, Typography } from '@mui/material';
 import { Menu } from './components/Menu/Menu';
 import { menuData } from './data/menuData';
+import { Provider } from 'react-redux';
+import { store } from './store';
 
 function App() {
   return (
-    <>
+    <Provider store={store}>
       <AppBar position="static" sx={{ mb: 4, bgcolor: 'var(--color-primary)' }}>
         <Toolbar>
           <Typography variant="h6">
@@ -15,7 +17,7 @@ function App() {
       <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 16px' }}>
         <Menu categories={menuData} />
       </div>
-    </>
+    </Provider>
   )
 }
 
