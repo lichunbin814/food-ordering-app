@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import cartReducer, { addToCart, removeFromCart } from '../cartSlice';
+import cartReducer, { addToCart, removeFromCart, updateQuantity } from '../cartSlice';
 import { MenuItem } from '../../../types/menu';
 
 describe('cart reducer', () => {
@@ -57,6 +57,57 @@ describe('cart reducer', () => {
       }]
     };
     const actual = cartReducer(stateWithItem, removeFromCart('non-existent-id'));
+    expect(actual.items).toHaveLength(1);
+    expect(actual.items[0]).toEqual({
+      ...sampleItem,
+      quantity: 1
+    });
+  });
+
+  it('should handle updateQuantity to increase quantity', () => {
+    const stateWithItem = {
+      items: [{
+        ...sampleItem,
+        quantity: 1
+      }]
+    };
+    const actual = cartReducer(stateWithItem, updateQuantity({ id: sampleItem.id, quantity: 3 }));
+    expect(actual.items).toHaveLength(1);
+    expect(actual.items[0].quantity).toBe(3);
+  });
+
+  it('should handle updateQuantity to decrease quantity', () => {
+    const stateWithItem = {
+      items: [{
+        ...sampleItem,
+        quantity: 3
+      }]
+    };
+    const actual = cartReducer(stateWithItem, updateQuantity({ id: sampleItem.id, quantity: 2 }));
+    expect(actual.items).toHaveLength(1);
+    expect(actual.items[0].quantity).toBe(2);
+  });
+
+  it('should allow setting quantity to any value including zero', () => {
+    const stateWithItem = {
+      items: [{
+        ...sampleItem,
+        quantity: 1
+      }]
+    };
+    const actual = cartReducer(stateWithItem, updateQuantity({ id: sampleItem.id, quantity: 0 }));
+    expect(actual.items).toHaveLength(1);
+    expect(actual.items[0].quantity).toBe(0);
+  });
+
+  it('should handle updateQuantity with non-existent item', () => {
+    const stateWithItem = {
+      items: [{
+        ...sampleItem,
+        quantity: 1
+      }]
+    };
+    const actual = cartReducer(stateWithItem, updateQuantity({ id: 'non-existent-id', quantity: 5 }));
     expect(actual.items).toHaveLength(1);
     expect(actual.items[0]).toEqual({
       ...sampleItem,

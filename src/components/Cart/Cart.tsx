@@ -1,6 +1,6 @@
 import { Box, Typography, Card, CardContent, Button } from '@mui/material';
 import { useSelector, useDispatch } from 'react-redux';
-import { removeFromCart } from '../../store/slices/cartSlice';
+import { removeFromCart, updateQuantity } from '../../store/slices/cartSlice';
 import { RootState } from '../../store';
 
 export const Cart = () => {
@@ -38,11 +38,36 @@ export const Cart = () => {
               <Typography variant="h6" component="h3">
                 {item.name}
               </Typography>
-              <Typography variant="body2">
-                Quantity: {item.quantity}
-              </Typography>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mt: 1 }}>
+                <Button
+                  size="small"
+                  variant="outlined"
+                  onClick={() => {
+                    if (item.quantity === 1) {
+                      return;
+                    }
+
+                    dispatch(
+                      updateQuantity({
+                        id: item.id,
+                        quantity: item.quantity - 1,
+                      })
+                    );
+                  }}
+                >
+                  -
+                </Button>
+                <Typography sx={{ mx: 2 }}>{item.quantity}</Typography>
+                <Button
+                  size="small"
+                  variant="outlined"
+                  onClick={() => dispatch(updateQuantity({ id: item.id, quantity: item.quantity + 1 }))}
+                >
+                  +
+                </Button>
+              </Box>
             </Box>
-            <Button 
+            <Button
               onClick={() => handleRemoveFromCart(item.id)}
               color="error"
               variant="outlined"
