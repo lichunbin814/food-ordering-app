@@ -1,33 +1,20 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { AppBar, Toolbar, Typography } from '@mui/material';
+import { Menu } from './components/Menu/Menu';
+import { menuData } from './data/menuData';
 
 function App() {
-  const [count, setCount] = useState(0)
-
   return (
     <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
+      <AppBar position="static" sx={{ mb: 4, bgcolor: 'var(--color-primary)' }}>
+        <Toolbar>
+          <Typography variant="h6">
+            Food Ordering System
+          </Typography>
+        </Toolbar>
+      </AppBar>
+      <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 16px' }}>
+        <Menu categories={menuData} />
       </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
     </>
   )
 }
