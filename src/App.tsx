@@ -1,6 +1,7 @@
-import { AppBar, Toolbar, Typography } from '@mui/material';
+import { AppBar, Toolbar, Typography, Container } from '@mui/material';
 import { Menu } from './components/Menu/Menu';
 import { menuData } from './data/menuData';
+import { Cart } from './components/Cart/Cart';
 import { Provider } from 'react-redux';
 import { store } from './store';
 
@@ -14,9 +15,10 @@ function App() {
           </Typography>
         </Toolbar>
       </AppBar>
-      <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 16px' }}>
+      <Container maxWidth="lg" sx={{ py: 2 }}>
         <Menu categories={menuData} />
-      </div>
+        <Cart />
+      </Container>
     </Provider>
   )
 }
