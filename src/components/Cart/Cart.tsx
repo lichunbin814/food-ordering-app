@@ -1,6 +1,7 @@
 import { Box, Typography, Card, CardContent, Button } from '@mui/material';
 import { useSelector, useDispatch } from 'react-redux';
-import { removeFromCart, updateQuantity } from '../../store/slices/cartSlice';
+import { removeFromCart, updateQuantity, clearCart } from '../../store/slices/cartSlice';
+import { addOrder } from '../../store/slices/historySlice';
 import { RootState } from '../../store';
 
 export const Cart = () => {
@@ -83,7 +84,13 @@ export const Cart = () => {
         color="primary" 
         fullWidth 
         sx={{ mt: 2 }}
-        onClick={() => console.log('Order submitted')}
+        onClick={() => {
+          dispatch(addOrder({
+            items: cartItems,
+            date: new Date().toISOString(),
+          }));
+          dispatch(clearCart());
+        }}
       >
         Submit Order
       </Button>

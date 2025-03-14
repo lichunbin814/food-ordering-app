@@ -12,7 +12,6 @@ export const Menu = ({ categories }: MenuProps) => {
   const dispatch = useDispatch();
 
   const handleAddToCart = (item: MenuItem) => {
-    console.log(`Adding ${item.name} to cart`);
     dispatch(addToCart(item));
   };
 

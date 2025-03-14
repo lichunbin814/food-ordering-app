@@ -2,6 +2,7 @@ import { AppBar, Toolbar, Typography, Container } from '@mui/material';
 import { Menu } from './components/Menu/Menu';
 import { menuData } from './data/menuData';
 import { Cart } from './components/Cart/Cart';
+import { History } from './components/History/History';
 import { Provider } from 'react-redux';
 import { store } from './store';
 
@@ -18,6 +19,7 @@ function App() {
       <Container maxWidth="lg" sx={{ py: 2 }}>
         <Menu categories={menuData} />
         <Cart />
+        <History />
       </Container>
     </Provider>
   )
