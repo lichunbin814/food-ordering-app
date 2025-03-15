@@ -1,9 +1,11 @@
-import { render, screen, fireEvent } from '@testing-library/react';
-import { describe, it, expect, vi } from 'vitest';
+import { render, screen, fireEvent, act } from '@testing-library/react';
+import { describe, it, expect, vi, beforeEach, afterEach, MockInstance } from 'vitest';
 import { Menu } from '../Menu';
 import { Provider } from 'react-redux';
-import { configureStore } from '@reduxjs/toolkit';
+import { configureStore, Store, UnknownAction } from '@reduxjs/toolkit';
+import { RootState } from '../../../store';
 import cartReducer from '../../../store/slices/cartSlice';
+import historyReducer from '../../../store/slices/historySlice';
 
 const mockCategories = [
   {
@@ -24,17 +26,29 @@ const mockCategories = [
   }
 ];
 
-const createMockStore = () => {
-  return configureStore({
-    reducer: {
-      cart: cartReducer
-    }
-  });
-};
-
 describe('Menu Component', () => {
+  let store: Store<RootState>;
+  let dispatchSpy: MockInstance<[action: UnknownAction, ...extraArgs: any[]], UnknownAction>;
+
+  beforeEach(() => {
+    store = configureStore({
+      reducer: {
+        cart: cartReducer,
+        history: historyReducer
+      },
+      middleware: (getDefaultMiddleware) => 
+        getDefaultMiddleware({
+          serializableCheck: false
+        })
+    });
+    dispatchSpy = vi.spyOn(store, 'dispatch');
+  });
+
+  afterEach(() => {
+    dispatchSpy.mockRestore();
+  });
+
   const renderWithProvider = () => {
-    const store = createMockStore();
     return {
       ...render(
         <Provider store={store}>
@@ -74,14 +88,17 @@ describe('Menu Component', () => {
     expect(addToCartButtons).toHaveLength(mockCategories[0].items.length);
   });
 
-  it('should dispatch addToCart action when Add to Cart button is clicked', () => {
-    const consoleSpy = vi.spyOn(console, 'log');
+  it('should dispatch addToCart action when Add to Cart button is clicked', async () => {
     renderWithProvider();
     
-    const firstAddToCartButton = screen.getAllByText('Add to Cart')[0];
-    fireEvent.click(firstAddToCartButton);
+    await act(async () => {
+      const firstAddToCartButton = screen.getAllByText('Add to Cart')[0];
+      fireEvent.click(firstAddToCartButton);
+    });
     
-    expect(consoleSpy).toHaveBeenCalledWith('Adding Test Item 1 to cart');
-    consoleSpy.mockRestore();
+    expect(dispatchSpy).toHaveBeenCalledWith({
+      type: 'cart/addToCart',
+      payload: mockCategories[0].items[0]
+    });
   });
 });

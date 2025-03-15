@@ -1,11 +1,14 @@
-import { AppBar, Toolbar, Typography, Container, Button } from '@mui/material';
-import { useState } from 'react';
+import { AppBar, Toolbar, Typography, Container, Button, CircularProgress, Backdrop } from '@mui/material';
+import { useState, Suspense, lazy } from 'react';
 import { Menu } from './components/Menu/Menu';
 import { menuData } from './data/menuData';
 import { Cart } from './components/Cart/Cart';
-import { HistoryDialog } from './components/History/HistoryDialog';
 import { Provider } from 'react-redux';
 import { store } from './store';
+
+const HistoryDialog = lazy(() => import('./components/History/HistoryDialog').then(module => ({
+  default: module.HistoryDialog
+})));
 
 function App() {
   const [openHistory, setOpenHistory] = useState(false);
@@ -29,10 +32,18 @@ function App() {
         <Menu categories={menuData} />
         <Cart />
       </Container>
-      <HistoryDialog 
-        open={openHistory}
-        onClose={() => setOpenHistory(false)}
-      />
+      <Suspense fallback={
+        <Backdrop open={true}>
+          <CircularProgress />
+        </Backdrop>
+      }>
+        {openHistory && (
+          <HistoryDialog 
+            open={openHistory}
+            onClose={() => setOpenHistory(false)}
+          />
+        )}
+      </Suspense>
     </Provider>
   )
 }
