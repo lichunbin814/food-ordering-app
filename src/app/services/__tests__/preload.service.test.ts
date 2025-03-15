@@ -18,37 +18,43 @@ describe('PreloadService', () => {
   });
 
   describe('addTask', () => {
-    it('should add task with LOW priority', async () => {
+    it('should add task with LOW priority and call onComplete', async () => {
       const task = vi.fn().mockResolvedValue(undefined);
+      const onComplete = vi.fn();
       
-      preloadService.addTask(task, PreloadPriority.LOW);
+      preloadService.addTask(task, PreloadPriority.LOW, onComplete);
       preloadService.startPreloading();
       
       await vi.runAllTimersAsync();
       
       expect(task).toHaveBeenCalled();
+      expect(onComplete).toHaveBeenCalled();
     });
 
-    it('should add task with MEDIUM priority', async () => {
+    it('should add task with MEDIUM priority and call onComplete', async () => {
       const task = vi.fn().mockResolvedValue(undefined);
+      const onComplete = vi.fn();
       
-      preloadService.addTask(task, PreloadPriority.MEDIUM);
+      preloadService.addTask(task, PreloadPriority.MEDIUM, onComplete);
       preloadService.startPreloading();
       
       await vi.runAllTimersAsync();
       
       expect(task).toHaveBeenCalled();
+      expect(onComplete).toHaveBeenCalled();
     });
 
-    it('should add task with HIGH priority', async () => {
+    it('should add task with HIGH priority and call onComplete', async () => {
       const task = vi.fn().mockResolvedValue(undefined);
+      const onComplete = vi.fn();
       
-      preloadService.addTask(task, PreloadPriority.HIGH);
+      preloadService.addTask(task, PreloadPriority.HIGH, onComplete);
       preloadService.startPreloading();
       
       await vi.runAllTimersAsync();
       
       expect(task).toHaveBeenCalled();
+      expect(onComplete).toHaveBeenCalled();
     });
 
     it('should process tasks in priority order', async () => {

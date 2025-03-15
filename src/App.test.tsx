@@ -24,7 +24,7 @@ describe('App', () => {
     });
 
     it('initializes preload tasks on mount', () => {
-      expect(preloadService.addTask).toHaveBeenCalledWith(expect.any(Function), 'low');
+      expect(preloadService.addTask).toHaveBeenCalledWith(expect.any(Function), 'low', expect.any(Function));
       expect(preloadService.startPreloading).toHaveBeenCalled();
     });
   });

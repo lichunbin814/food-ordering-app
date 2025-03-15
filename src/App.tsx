@@ -1,11 +1,12 @@
-import { AppBar, Toolbar, Typography, Container, Button, CircularProgress, Backdrop } from '@mui/material';
-import { useState, Suspense, lazy, useEffect } from 'react';
+import { AppBar, Toolbar, Typography, Container, Button } from '@mui/material';
+import { useState, lazy, useEffect } from 'react';
 import { Menu } from './components/Menu/Menu';
 import { menuData } from './data/menuData';
 import { Cart } from './components/Cart/Cart';
 import { Provider } from 'react-redux';
 import { store } from './store';
 import { PreloadPriority, preloadService } from './app/services/preload.service';
+import { LazyComponent } from './components/common/LazyComponent';
 
 const preloadHistoryDialog = () => import('./components/History/HistoryDialog');
 
@@ -15,9 +16,14 @@ const HistoryDialog = lazy(() => preloadHistoryDialog().then(module => ({
 
 function App() {
   const [openHistory, setOpenHistory] = useState(false);
+  const [isHistoryDialogLoaded, setIsHistoryDialogLoaded] = useState(false);
 
   useEffect(() => {
-    preloadService.addTask(preloadHistoryDialog, PreloadPriority.LOW);
+    preloadService.addTask(
+      preloadHistoryDialog,
+      PreloadPriority.LOW,
+      () => setIsHistoryDialogLoaded(true)
+    );
     preloadService.startPreloading();
   }, []);
 
@@ -40,18 +46,16 @@ function App() {
         <Menu categories={menuData} />
         <Cart />
       </Container>
-      <Suspense fallback={
-        <Backdrop open={true}>
-          <CircularProgress />
-        </Backdrop>
-      }>
-        {openHistory && (
+      <LazyComponent<{ open: boolean; onClose: () => void }> 
+        isLoaded={isHistoryDialogLoaded}
+      >
+        {() => openHistory ? (
           <HistoryDialog 
             open={openHistory}
             onClose={() => setOpenHistory(false)}
           />
-        )}
-      </Suspense>
+        ) : <></>}
+      </LazyComponent>
     </Provider>
   )
 }

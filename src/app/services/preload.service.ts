@@ -4,7 +4,10 @@ export enum PreloadPriority {
   HIGH = 'high',
 }
 
-export type PreloadTask = () => Promise<any>;
+export interface PreloadTask {
+  task: () => Promise<any>;
+  onComplete?: () => void;
+}
 
 export class PreloadService {
   private lowPriorityQueue: PreloadTask[] = [];
@@ -22,16 +25,17 @@ export class PreloadService {
     this.processAllQueues();
   }
 
-  addTask(task: PreloadTask, priority: PreloadPriority = PreloadPriority.MEDIUM): void {
+  addTask(task: () => Promise<any>, priority: PreloadPriority = PreloadPriority.MEDIUM, onComplete?: () => void): void {
+    const preloadTask: PreloadTask = { task, onComplete };
     switch (priority) {
       case PreloadPriority.LOW:
-        this.lowPriorityQueue.push(task);
+        this.lowPriorityQueue.push(preloadTask);
         break;
       case PreloadPriority.MEDIUM:
-        this.mediumPriorityQueue.push(task);
+        this.mediumPriorityQueue.push(preloadTask);
         break;
       case PreloadPriority.HIGH:
-        this.highPriorityQueue.push(task);
+        this.highPriorityQueue.push(preloadTask);
         break;
     }
 
@@ -87,11 +91,12 @@ export class PreloadService {
     if (task) {
       requestIdleCallbackPolyfill(() => {
         requestAnimationFrame(() => {
-          task()
-            .catch(() => {})
-            .finally(() => {
-              this.processLowPriorityQueue();
-            });
+        task.task()
+          .catch(() => {})
+          .finally(() => {
+            task.onComplete?.();
+            this.processLowPriorityQueue();
+          });
         });
       });
     } else {
@@ -110,11 +115,12 @@ export class PreloadService {
     if (task) {
       setTimeout(() => {
         requestAnimationFrame(() => {
-          task()
-            .catch(() => {})
-            .finally(() => {
-              this.processMediumPriorityQueue();
-            });
+        task.task()
+          .catch(() => {})
+          .finally(() => {
+            task.onComplete?.();
+            this.processMediumPriorityQueue();
+          });
         });
       }, 0);
     } else {
@@ -132,9 +138,10 @@ export class PreloadService {
     
     if (task) {
       requestAnimationFrame(() => {
-        task()
+        task.task()
           .catch(() => {})
           .finally(() => {
+            task.onComplete?.();
             this.processHighPriorityQueue();
           });
       });
