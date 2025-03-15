@@ -1,10 +1,32 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
 import App from './App';
+import { preloadService } from './app/services/preload.service';
 
 describe('App', () => {
   beforeEach(() => {
     render(<App />);
+  });
+
+  describe('PreloadService', () => {
+    vi.mock('./app/services/preload.service', () => ({
+      preloadService: {
+        addTask: vi.fn(),
+        startPreloading: vi.fn()
+      },
+      PreloadPriority: {
+        LOW: 'low'
+      }
+    }));
+
+    afterEach(() => {
+      vi.clearAllMocks();
+    });
+
+    it('initializes preload tasks on mount', () => {
+      expect(preloadService.addTask).toHaveBeenCalledWith(expect.any(Function), 'low');
+      expect(preloadService.startPreloading).toHaveBeenCalled();
+    });
   });
 
   it('renders header with correct title', () => {

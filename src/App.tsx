@@ -1,17 +1,25 @@
 import { AppBar, Toolbar, Typography, Container, Button, CircularProgress, Backdrop } from '@mui/material';
-import { useState, Suspense, lazy } from 'react';
+import { useState, Suspense, lazy, useEffect } from 'react';
 import { Menu } from './components/Menu/Menu';
 import { menuData } from './data/menuData';
 import { Cart } from './components/Cart/Cart';
 import { Provider } from 'react-redux';
 import { store } from './store';
+import { PreloadPriority, preloadService } from './app/services/preload.service';
 
-const HistoryDialog = lazy(() => import('./components/History/HistoryDialog').then(module => ({
+const preloadHistoryDialog = () => import('./components/History/HistoryDialog');
+
+const HistoryDialog = lazy(() => preloadHistoryDialog().then(module => ({
   default: module.HistoryDialog
 })));
 
 function App() {
   const [openHistory, setOpenHistory] = useState(false);
+
+  useEffect(() => {
+    preloadService.addTask(preloadHistoryDialog, PreloadPriority.LOW);
+    preloadService.startPreloading();
+  }, []);
 
   return (
     <Provider store={store}>
